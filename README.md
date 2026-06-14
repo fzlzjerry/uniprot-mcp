@@ -3,6 +3,7 @@
 [![CI](https://github.com/fzlzjerry/uniprot-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/fzlzjerry/uniprot-mcp/actions/workflows/ci.yml)
 [![PyPI](https://img.shields.io/pypi/v/uniprotkb-mcp)](https://pypi.org/project/uniprotkb-mcp/)
 [![Python](https://img.shields.io/pypi/pyversions/uniprotkb-mcp)](https://pypi.org/project/uniprotkb-mcp/)
+[![MCP Badge](https://lobehub.com/badge/mcp/fzlzjerry-uniprot-mcp)](https://lobehub.com/mcp/fzlzjerry-uniprot-mcp)
 
 > GitHub repo: `fzlzjerry/uniprot-mcp` · PyPI package & command: **`uniprotkb-mcp`**
 > (the Python import package is `uniprot_mcp`).

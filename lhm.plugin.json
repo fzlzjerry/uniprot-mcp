@@ -1,0 +1,212 @@
+{
+  "identifier": "fzlzjerry-uniprot-mcp",
+  "name": "UniProt",
+  "version": "0.1.0",
+  "author": "fzlzjerry",
+  "authorUrl": "https://github.com/fzlzjerry",
+  "homepage": "https://github.com/fzlzjerry/uniprot-mcp",
+  "icon": "🧬",
+  "description": "UniProt REST API over MCP: search UniProtKB, fetch entries and FASTA, map identifiers between databases, resolve taxonomy, and search UniRef clusters and proteomes.",
+  "tags": [
+    "uniprot",
+    "bioinformatics",
+    "proteins",
+    "protein-sequences",
+    "fasta",
+    "id-mapping",
+    "taxonomy",
+    "proteomes"
+  ],
+  "tools": [
+    {
+      "name": "search_uniprotkb",
+      "description": "Search UniProtKB and return matching protein entries.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "UniProtKB query in native syntax, e.g. 'gene:BRCA1' or 'keyword:Kinase AND length:[300 TO 500]'."
+          },
+          "reviewed": {
+            "type": "boolean",
+            "description": "True = Swiss-Prot (reviewed) only; False = TrEMBL only; omit = both."
+          },
+          "organism_id": {
+            "type": "integer",
+            "description": "NCBI taxonomy id filter, e.g. 9606 for human."
+          },
+          "fields": {
+            "type": "string",
+            "description": "Comma-separated result fields for format='tsv' (e.g. 'accession,gene_names,length')."
+          },
+          "size": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 500,
+            "default": 25,
+            "description": "Max entries to return (1-500)."
+          },
+          "format": {
+            "type": "string",
+            "enum": ["summary", "fasta", "tsv"],
+            "default": "summary",
+            "description": "'summary' = compact per-entry digest; 'fasta' = raw sequences; 'tsv' = tab-separated table."
+          }
+        },
+        "required": ["query"]
+      }
+    },
+    {
+      "name": "get_entry",
+      "description": "Fetch one UniProtKB entry by accession.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "accession": {
+            "type": "string",
+            "description": "UniProtKB accession, e.g. 'P38398' or 'P04637'."
+          },
+          "format": {
+            "type": "string",
+            "enum": ["summary", "json", "fasta", "txt", "gff"],
+            "default": "summary",
+            "description": "'summary' = curated digest; 'json' = full record; 'fasta' = sequence; 'txt' = flat file; 'gff' = features."
+          }
+        },
+        "required": ["accession"]
+      }
+    },
+    {
+      "name": "get_fasta",
+      "description": "Return raw FASTA sequence(s) for one or more UniProtKB accessions.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "accessions": {
+            "description": "One accession (string) or several (list of strings), e.g. ['P38398', 'P04637'].",
+            "oneOf": [
+              { "type": "string" },
+              { "type": "array", "items": { "type": "string" } }
+            ]
+          }
+        },
+        "required": ["accessions"]
+      }
+    },
+    {
+      "name": "map_ids",
+      "description": "Map identifiers between databases via UniProt's async ID-mapping service.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "from_db": {
+            "type": "string",
+            "description": "Source database id, e.g. 'UniProtKB_AC-ID', 'Gene_Name', 'RefSeq_Protein', 'Ensembl', 'PDB', 'GeneID', 'KEGG'. An invalid value returns the full allowed list."
+          },
+          "to_db": {
+            "type": "string",
+            "description": "Target database id, e.g. 'UniProtKB' (enriched entries), 'PDB', 'Ensembl', 'KEGG', 'RefSeq_Protein'."
+          },
+          "ids": {
+            "description": "One id (string) or many (list), e.g. ['P38398', 'P04637'].",
+            "oneOf": [
+              { "type": "string" },
+              { "type": "array", "items": { "type": "string" } }
+            ]
+          }
+        },
+        "required": ["from_db", "to_db", "ids"]
+      }
+    },
+    {
+      "name": "get_taxonomy",
+      "description": "Resolve a taxonomy name or id to UniProt taxonomy records.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "query_or_id": {
+            "type": "string",
+            "description": "An organism name ('Homo sapiens', 'human', 'E. coli') or a numeric NCBI taxon id ('9606')."
+          }
+        },
+        "required": ["query_or_id"]
+      }
+    },
+    {
+      "name": "search_uniref",
+      "description": "Search UniRef clusters (sequence-similarity clusters of UniProt proteins).",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "UniRef query, e.g. 'BRCA1', 'uniprotkb:P38398', or 'taxonomy_id:9606'."
+          },
+          "identity": {
+            "type": "string",
+            "enum": ["1.0", "0.9", "0.5"],
+            "description": "Cluster identity threshold: '1.0'=UniRef100, '0.9'=UniRef90, '0.5'=UniRef50."
+          },
+          "size": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 500,
+            "default": 25,
+            "description": "Max clusters to return (1-500)."
+          },
+          "format": {
+            "type": "string",
+            "enum": ["summary", "tsv"],
+            "default": "summary",
+            "description": "'summary' = compact list; 'tsv' = table."
+          }
+        },
+        "required": ["query"]
+      }
+    },
+    {
+      "name": "search_proteomes",
+      "description": "Search UniProt proteomes (the protein set of an organism's genome).",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "Free-text proteome query, e.g. 'Escherichia coli'. May be omitted if organism_id is set."
+          },
+          "organism_id": {
+            "type": "integer",
+            "description": "NCBI taxonomy id filter, e.g. 9606 for human."
+          },
+          "reference_only": {
+            "type": "boolean",
+            "default": false,
+            "description": "Only reference proteomes (one high-quality proteome per species group)."
+          },
+          "size": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 500,
+            "default": 25,
+            "description": "Max proteomes to return (1-500)."
+          },
+          "format": {
+            "type": "string",
+            "enum": ["summary", "tsv"],
+            "default": "summary",
+            "description": "'summary' = compact list; 'tsv' = table."
+          }
+        },
+        "required": []
+      }
+    }
+  ],
+  "resources": [
+    {
+      "name": "UniProt query cheat-sheet",
+      "uri": "resource://uniprot/query-cheatsheet",
+      "description": "Reference for UniProtKB query syntax (fields, operators, ranges, examples)."
+    }
+  ]
+}
