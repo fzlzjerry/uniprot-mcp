@@ -1,6 +1,8 @@
 # uniprot-mcp
 
 [![CI](https://github.com/fzlzjerry/uniprot-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/fzlzjerry/uniprot-mcp/actions/workflows/ci.yml)
+[![PyPI](https://img.shields.io/pypi/v/uniprotkb-mcp)](https://pypi.org/project/uniprotkb-mcp/)
+[![Python](https://img.shields.io/pypi/pyversions/uniprotkb-mcp)](https://pypi.org/project/uniprotkb-mcp/)
 
 > GitHub repo: `fzlzjerry/uniprot-mcp` · PyPI package & command: **`uniprotkb-mcp`**
 > (the Python import package is `uniprot_mcp`).
@@ -12,6 +14,28 @@ to LLM clients (Claude Code, Claude Desktop, …) over **stdio**. Built with
 Tools return **compact, token-efficient summaries by default** and full payloads
 only on request, with robust error handling and an embedded UniProt query
 cheat-sheet so the model writes valid queries.
+
+## Quick start
+
+Published on PyPI — no clone, no install needed:
+
+```bash
+uvx uniprotkb-mcp
+```
+
+Then point your MCP client at it (full config below):
+
+```json
+{
+  "mcpServers": {
+    "uniprot": {
+      "command": "uvx",
+      "args": ["uniprotkb-mcp"],
+      "env": { "UNIPROT_MCP_CONTACT": "you@example.org" }
+    }
+  }
+}
+```
 
 ## Tools
 
@@ -63,7 +87,7 @@ UNIPROT_MCP_CONTACT="you@example.org" uv run uniprotkb-mcp
 throwaway environment — nothing to install first. Pick whichever source you have:
 
 ```bash
-# From PyPI (once published — see "Releasing" below):
+# From PyPI (published):
 uvx uniprotkb-mcp
 
 # From a Git repo (note: repo is uniprot-mcp, command is uniprotkb-mcp):
@@ -90,18 +114,19 @@ Windows: `%APPDATA%\Claude\claude_desktop_config.json`) and add:
   "mcpServers": {
     "uniprot": {
       "command": "uvx",
-      "args": ["--from", "git+https://github.com/fzlzjerry/uniprot-mcp", "uniprotkb-mcp"],
+      "args": ["uniprotkb-mcp"],
       "env": { "UNIPROT_MCP_CONTACT": "you@example.org" }
     }
   }
 }
 ```
 
-Swap the `--from` source for a local path (`/ABSOLUTE/PATH/TO/uniprot-mcp`) or,
-once published, drop `--from` entirely and use `"args": ["uniprotkb-mcp"]`. Make
-sure `uvx` is on the `PATH` Claude Desktop sees (it ships with `uv`; give the
-absolute path to `uvx` if needed, e.g. `~/.local/bin/uvx`). Restart Claude Desktop
-and the `uniprot` tools appear.
+This runs the published package straight from PyPI. To run unreleased code
+instead, add a source: `"args": ["--from", "git+https://github.com/fzlzjerry/uniprot-mcp", "uniprotkb-mcp"]`
+(git) or `"args": ["--from", "/ABSOLUTE/PATH/TO/uniprot-mcp", "uniprotkb-mcp"]`
+(local checkout). Make sure `uvx` is on the `PATH` Claude Desktop sees (it ships
+with `uv`; give the absolute path to `uvx` if needed, e.g. `~/.local/bin/uvx`).
+Restart Claude Desktop and the `uniprot` tools appear.
 
 > Prefer a cloned checkout instead of `uvx`? Use
 > `"command": "uv", "args": ["run", "--directory", "/ABSOLUTE/PATH/TO/uniprot-mcp", "uniprotkb-mcp"]`.
@@ -115,7 +140,7 @@ Project-scoped via a `.mcp.json` in your project root (same shape):
   "mcpServers": {
     "uniprot": {
       "command": "uvx",
-      "args": ["--from", "git+https://github.com/fzlzjerry/uniprot-mcp", "uniprotkb-mcp"],
+      "args": ["uniprotkb-mcp"],
       "env": { "UNIPROT_MCP_CONTACT": "you@example.org" }
     }
   }
