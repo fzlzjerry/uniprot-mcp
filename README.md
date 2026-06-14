@@ -166,49 +166,12 @@ Exercises every tool against the live API and prints the output:
 UNIPROT_MCP_CONTACT="you@example.org" uv run python -m tests.smoke
 ```
 
-## Continuous integration
+## Development
 
-`.github/workflows/ci.yml` runs on every push / PR to `main`:
-
-- **structure** (Python 3.10 & 3.13) — byte-compile + offline checks that all 7
-  tools register, `ctx` stays out of the public schema, and the cheat-sheet
-  resource is present (`tests/check_structure.py`).
-- **smoke** — the full live-API smoke test (`tests/smoke.py`).
-
-## Releasing (PyPI Trusted Publishing — no token)
-
-Publishing uses **OIDC Trusted Publishing**, PyPI's recommended method: GitHub
-Actions proves its identity to PyPI directly, so **no API token or secret is
-stored anywhere**. `.github/workflows/publish.yml` builds and publishes on a
-version tag.
-
-**One-time PyPI setup** — at <https://pypi.org/manage/account/publishing/> add a
-*pending* publisher (pending because the project doesn't exist on PyPI yet; it
-becomes a normal trusted publisher after the first upload):
-
-| Field | Value |
-|-------|-------|
-| PyPI Project Name | `uniprotkb-mcp` |
-| Owner | `fzlzjerry` |
-| Repository name | `uniprot-mcp` |
-| Workflow name | `publish.yml` |
-| Environment name | `pypi` |
-
-**Each release:**
-
-```bash
-# bump `version` in pyproject.toml, commit, then tag:
-git tag v0.1.0
-git push origin v0.1.0
-```
-
-The tag triggers `publish.yml`, which checks the tag matches the pyproject
-version, builds the sdist + wheel, and uploads via OIDC. After the first upload,
-anyone can run **`uvx uniprotkb-mcp`** and the Claude config simplifies to
-`"command": "uvx", "args": ["uniprotkb-mcp"]`.
-
-> Prefer a manual one-off? `uv build && uv publish --token pypi-...` still works,
-> but Trusted Publishing is the recommended, token-free path.
+Developing, testing, CI, and the release process (CI-driven PyPI Trusted
+Publishing — no token) are documented in [CONTRIBUTING.md](CONTRIBUTING.md).
+TL;DR: `uv sync`, then `uv run python -m tests.check_structure` (offline) and
+`uv run python -m tests.smoke` (live API).
 
 ## Design notes
 
