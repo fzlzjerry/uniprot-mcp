@@ -2,6 +2,9 @@
 
 [![CI](https://github.com/fzlzjerry/uniprot-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/fzlzjerry/uniprot-mcp/actions/workflows/ci.yml)
 
+> GitHub repo: `fzlzjerry/uniprot-mcp` · PyPI package & command: **`uniprotkb-mcp`**
+> (the Python import package is `uniprot_mcp`).
+
 A production-quality **MCP server** that exposes the [UniProt REST API](https://rest.uniprot.org)
 to LLM clients (Claude Code, Claude Desktop, …) over **stdio**. Built with
 [FastMCP](https://gofastmcp.com) and managed with [`uv`](https://docs.astral.sh/uv/).
@@ -34,8 +37,8 @@ UniProtKB query syntax (`gene:`, `organism_id:`, `reviewed:true`,
 ## Install
 
 ```bash
-git clone <this repo>   # or copy the directory
-cd uniprot
+git clone https://github.com/fzlzjerry/uniprot-mcp
+cd uniprot-mcp
 uv sync                 # creates .venv and installs fastmcp + httpx
 ```
 
@@ -43,7 +46,7 @@ uv sync                 # creates .venv and installs fastmcp + httpx
 
 ```bash
 # stdio server (what MCP clients launch):
-uv run uniprot-mcp
+uv run uniprotkb-mcp
 ```
 
 UniProt asks API clients to identify themselves with a contact address. Set one
@@ -51,7 +54,7 @@ via the `UNIPROT_MCP_CONTACT` environment variable (it goes into the
 `User-Agent`); otherwise a placeholder is used.
 
 ```bash
-UNIPROT_MCP_CONTACT="you@example.org" uv run uniprot-mcp
+UNIPROT_MCP_CONTACT="you@example.org" uv run uniprotkb-mcp
 ```
 
 ## Run with `uvx` (no clone / no sync)
@@ -60,21 +63,21 @@ UNIPROT_MCP_CONTACT="you@example.org" uv run uniprot-mcp
 throwaway environment — nothing to install first. Pick whichever source you have:
 
 ```bash
-# From PyPI (once published — see "Publishing" below):
-uvx uniprot-mcp
+# From PyPI (once published — see "Releasing" below):
+uvx uniprotkb-mcp
 
-# From a Git repo:
-uvx --from git+https://github.com/fzlzjerry/uniprot-mcp uniprot-mcp
+# From a Git repo (note: repo is uniprot-mcp, command is uniprotkb-mcp):
+uvx --from git+https://github.com/fzlzjerry/uniprot-mcp uniprotkb-mcp
 
 # From a local checkout (this directory):
-uvx --from /ABSOLUTE/PATH/TO/uniprot uniprot-mcp
+uvx --from /ABSOLUTE/PATH/TO/uniprot-mcp uniprotkb-mcp
 
 # From a built wheel:
-uvx --from ./dist/uniprot_mcp-0.1.0-py3-none-any.whl uniprot-mcp
+uvx --from ./dist/uniprotkb_mcp-0.1.0-py3-none-any.whl uniprotkb-mcp
 ```
 
-Pin a version with `uvx uniprot-mcp@0.1.0`, or force a refresh of the cached
-build with `uvx --refresh --from <source> uniprot-mcp`.
+Pin a version with `uvx uniprotkb-mcp@0.1.0`, or force a refresh of the cached
+build with `uvx --refresh --from <source> uniprotkb-mcp`.
 
 ## Register with Claude Desktop
 
@@ -87,21 +90,21 @@ Windows: `%APPDATA%\Claude\claude_desktop_config.json`) and add:
   "mcpServers": {
     "uniprot": {
       "command": "uvx",
-      "args": ["--from", "git+https://github.com/fzlzjerry/uniprot-mcp", "uniprot-mcp"],
+      "args": ["--from", "git+https://github.com/fzlzjerry/uniprot-mcp", "uniprotkb-mcp"],
       "env": { "UNIPROT_MCP_CONTACT": "you@example.org" }
     }
   }
 }
 ```
 
-Swap the `--from` source for a local path (`/ABSOLUTE/PATH/TO/uniprot`) or, once
-published, drop `--from` entirely and use `"args": ["uniprot-mcp"]`. Make sure
-`uvx` is on the `PATH` Claude Desktop sees (it ships with `uv`; give the absolute
-path to `uvx` if needed, e.g. `~/.local/bin/uvx`). Restart Claude Desktop and the
-`uniprot` tools appear.
+Swap the `--from` source for a local path (`/ABSOLUTE/PATH/TO/uniprot-mcp`) or,
+once published, drop `--from` entirely and use `"args": ["uniprotkb-mcp"]`. Make
+sure `uvx` is on the `PATH` Claude Desktop sees (it ships with `uv`; give the
+absolute path to `uvx` if needed, e.g. `~/.local/bin/uvx`). Restart Claude Desktop
+and the `uniprot` tools appear.
 
 > Prefer a cloned checkout instead of `uvx`? Use
-> `"command": "uv", "args": ["run", "--directory", "/ABSOLUTE/PATH/TO/uniprot", "uniprot-mcp"]`.
+> `"command": "uv", "args": ["run", "--directory", "/ABSOLUTE/PATH/TO/uniprot-mcp", "uniprotkb-mcp"]`.
 
 ## Register with Claude Code
 
@@ -112,7 +115,7 @@ Project-scoped via a `.mcp.json` in your project root (same shape):
   "mcpServers": {
     "uniprot": {
       "command": "uvx",
-      "args": ["--from", "git+https://github.com/fzlzjerry/uniprot-mcp", "uniprot-mcp"],
+      "args": ["--from", "git+https://github.com/fzlzjerry/uniprot-mcp", "uniprotkb-mcp"],
       "env": { "UNIPROT_MCP_CONTACT": "you@example.org" }
     }
   }
@@ -123,11 +126,11 @@ Or from the CLI:
 
 ```bash
 # via uvx (published / git / local source):
-claude mcp add uniprot -e UNIPROT_MCP_CONTACT=you@example.org -- uvx uniprot-mcp
+claude mcp add uniprot -e UNIPROT_MCP_CONTACT=you@example.org -- uvx uniprotkb-mcp
 
 # via a local checkout with uv:
 claude mcp add uniprot -e UNIPROT_MCP_CONTACT=you@example.org \
-  -- uv run --directory /ABSOLUTE/PATH/TO/uniprot uniprot-mcp
+  -- uv run --directory /ABSOLUTE/PATH/TO/uniprot-mcp uniprotkb-mcp
 ```
 
 ## Smoke test
@@ -160,7 +163,7 @@ becomes a normal trusted publisher after the first upload):
 
 | Field | Value |
 |-------|-------|
-| PyPI Project Name | `uniprot-mcp` |
+| PyPI Project Name | `uniprotkb-mcp` |
 | Owner | `fzlzjerry` |
 | Repository name | `uniprot-mcp` |
 | Workflow name | `publish.yml` |
@@ -176,13 +179,11 @@ git push origin v0.1.0
 
 The tag triggers `publish.yml`, which checks the tag matches the pyproject
 version, builds the sdist + wheel, and uploads via OIDC. After the first upload,
-anyone can run **`uvx uniprot-mcp`** and the Claude config simplifies to
-`"command": "uvx", "args": ["uniprot-mcp"]`.
+anyone can run **`uvx uniprotkb-mcp`** and the Claude config simplifies to
+`"command": "uvx", "args": ["uniprotkb-mcp"]`.
 
 > Prefer a manual one-off? `uv build && uv publish --token pypi-...` still works,
-> but Trusted Publishing is the recommended, token-free path. The package name
-> `uniprot-mcp` must be free on PyPI — pick another `name` in `pyproject.toml` if
-> it is taken.
+> but Trusted Publishing is the recommended, token-free path.
 
 ## Design notes
 

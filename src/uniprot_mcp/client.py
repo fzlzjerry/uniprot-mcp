@@ -25,7 +25,7 @@ BASE_URL = "https://rest.uniprot.org"
 
 # UniProt asks clients to identify themselves with a contact address.
 CONTACT = os.environ.get("UNIPROT_MCP_CONTACT", "unset-contact@example.com")
-USER_AGENT = f"uniprot-mcp/{__version__} (https://github.com/uniprot-mcp; mailto:{CONTACT})"
+USER_AGENT = f"uniprotkb-mcp/{__version__} (https://github.com/fzlzjerry/uniprot-mcp; mailto:{CONTACT})"
 
 _TIMEOUT = httpx.Timeout(connect=10.0, read=60.0, write=30.0, pool=10.0)
 _RETRY_STATUS = {429, 500, 502, 503, 504}

@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: pypi
-      url: https://pypi.org/p/uniprot-mcp
+      url: https://pypi.org/p/uniprotkb-mcp
     permissions:
       id-token: write   # required for OIDC trusted publishing
       contents: read

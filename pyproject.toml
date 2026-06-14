@@ -1,5 +1,5 @@
 [project]
-name = "uniprot-mcp"
+name = "uniprotkb-mcp"
 version = "0.1.0"
 description = "Production-quality MCP server exposing the UniProt REST API (search, entries, FASTA, ID mapping, taxonomy) to LLM clients over stdio."
 readme = "README.md"
@@ -31,7 +31,7 @@ Repository = "https://github.com/fzlzjerry/uniprot-mcp"
 Issues = "https://github.com/fzlzjerry/uniprot-mcp/issues"
 
 [project.scripts]
-uniprot-mcp = "uniprot_mcp.server:main"
+uniprotkb-mcp = "uniprot_mcp.server:main"
 
 [build-system]
 requires = ["hatchling"]

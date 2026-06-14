@@ -1,6 +1,6 @@
 """FastMCP server exposing the UniProt REST API over stdio.
 
-Run with ``uv run uniprot-mcp`` (or ``python -m uniprot_mcp.server``). Tools
+Run with ``uv run uniprotkb-mcp`` (or ``python -m uniprot_mcp.server``). Tools
 return compact, model-readable digests by default and full payloads on request.
 """
 
