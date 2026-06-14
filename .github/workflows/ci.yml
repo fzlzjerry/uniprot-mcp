@@ -1,0 +1,55 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  structure:
+    name: structure (py${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          enable-cache: true
+      - name: Sync dependencies
+        run: uv sync --python ${{ matrix.python-version }}
+      - name: Byte-compile
+        run: uv run python -m compileall -q src tests
+      - name: Offline structural checks
+        run: uv run python -m tests.check_structure
+
+  smoke:
+    name: live API smoke
+    needs: structure
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          python-version: "3.13"
+          enable-cache: true
+      - name: Sync dependencies
+        run: uv sync
+      - name: Smoke test against the live UniProt API
+        env:
+          UNIPROT_MCP_CONTACT: uniprot-mcp-ci@users.noreply.github.com
+        run: uv run python -m tests.smoke

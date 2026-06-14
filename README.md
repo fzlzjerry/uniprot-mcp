@@ -1,5 +1,7 @@
 # uniprot-mcp
 
+[![CI](https://github.com/fzlzjerry/uniprot-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/fzlzjerry/uniprot-mcp/actions/workflows/ci.yml)
+
 A production-quality **MCP server** that exposes the [UniProt REST API](https://rest.uniprot.org)
 to LLM clients (Claude Code, Claude Desktop, …) over **stdio**. Built with
 [FastMCP](https://gofastmcp.com) and managed with [`uv`](https://docs.astral.sh/uv/).
@@ -136,20 +138,51 @@ Exercises every tool against the live API and prints the output:
 UNIPROT_MCP_CONTACT="you@example.org" uv run python -m tests.smoke
 ```
 
-## Publishing to PyPI (enables bare `uvx uniprot-mcp`)
+## Continuous integration
+
+`.github/workflows/ci.yml` runs on every push / PR to `main`:
+
+- **structure** (Python 3.10 & 3.13) — byte-compile + offline checks that all 7
+  tools register, `ctx` stays out of the public schema, and the cheat-sheet
+  resource is present (`tests/check_structure.py`).
+- **smoke** — the full live-API smoke test (`tests/smoke.py`).
+
+## Releasing (PyPI Trusted Publishing — no token)
+
+Publishing uses **OIDC Trusted Publishing**, PyPI's recommended method: GitHub
+Actions proves its identity to PyPI directly, so **no API token or secret is
+stored anywhere**. `.github/workflows/publish.yml` builds and publishes on a
+version tag.
+
+**One-time PyPI setup** — at <https://pypi.org/manage/account/publishing/> add a
+*pending* publisher (pending because the project doesn't exist on PyPI yet; it
+becomes a normal trusted publisher after the first upload):
+
+| Field | Value |
+|-------|-------|
+| PyPI Project Name | `uniprot-mcp` |
+| Owner | `fzlzjerry` |
+| Repository name | `uniprot-mcp` |
+| Workflow name | `publish.yml` |
+| Environment name | `pypi` |
+
+**Each release:**
 
 ```bash
-# 1. Put your real repo URLs in [project.urls] (replace fzlzjerry), bump version.
-# 2. Build sdist + wheel:
-uv build
-# 3. Publish (needs a PyPI API token):
-UV_PUBLISH_TOKEN="pypi-..." uv publish
+# bump `version` in pyproject.toml, commit, then tag:
+git tag v0.1.0
+git push origin v0.1.0
 ```
 
-After it is on PyPI, anyone can run it with **`uvx uniprot-mcp`** — no clone, no
-install — and the Claude config simplifies to `"command": "uvx", "args": ["uniprot-mcp"]`.
-(The package name `uniprot-mcp` must be free on PyPI; pick another `name` in
-`pyproject.toml` if it is taken.)
+The tag triggers `publish.yml`, which checks the tag matches the pyproject
+version, builds the sdist + wheel, and uploads via OIDC. After the first upload,
+anyone can run **`uvx uniprot-mcp`** and the Claude config simplifies to
+`"command": "uvx", "args": ["uniprot-mcp"]`.
+
+> Prefer a manual one-off? `uv build && uv publish --token pypi-...` still works,
+> but Trusted Publishing is the recommended, token-free path. The package name
+> `uniprot-mcp` must be free on PyPI — pick another `name` in `pyproject.toml` if
+> it is taken.
 
 ## Design notes
 
